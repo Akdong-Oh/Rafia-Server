@@ -7,6 +7,7 @@ import dev.yangsijun.rafia.domain.room.service.RoomService
 import dev.yangsijun.rafia.domain.user.domain.User
 import dev.yangsijun.rafia.global.Util
 import dev.yangsijun.rafia.socket.message.EntryMessage
+import dev.yangsijun.rafia.socket.message.ExitMessage
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 
@@ -21,7 +22,8 @@ class ExitController(
     private val roomService: RoomService
 ) {
     @MessageMapping("/exit")
-    fun enter(message: EntryMessage, headerAccessor: SimpMessageHeaderAccessor) {
+    fun enter(message: ExitMessage, headerAccessor: SimpMessageHeaderAccessor) {
+        // TODO WebSocketEventListener 랑 로직이 비슷한 부분이 있으니 수정 시 주의
         if (message.status != GameStatus.EXIT)
             throw IllegalArgumentException("유효하지 않은 status")
         val room = roomService.findById(message.roomId) // TODO 예외처리 필요함
