@@ -44,4 +44,14 @@ class RoomService(
         return room
         log.trace("RoomService#deleteById [$id] : ${LocalDateTime.now()}")
     }
+
+    fun existById(id: UUID): Boolean {
+        return repository.existsById(id)
+        log.trace("RoomService#existById [$id] : ${LocalDateTime.now()}")
+    }
+
+    fun save(room: Room): Room {
+        return repository.save(room)
+        log.trace("RoomService#existById [$room] : ${LocalDateTime.now()}")
+    }
 }
