@@ -22,13 +22,13 @@ class DummyRoomCommandLineRunner(
         userRepository.deleteAll()
         roomRepository.deleteAll()
         val readiedPlayers: MutableList<Player> = mutableListOf(
-            Player(User(UUID.fromString("b9dc156f-b865-44ce-ab73-2ef65f706988"), "DummyUser1"), "sessionId", null, PlayerStatus.READY, listOf()),
-            Player(User(UUID.randomUUID(), "DummyUser2"), "sessionId", null, PlayerStatus.READY, listOf()),
-            Player(User(UUID.randomUUID(), "DummyUser3"), "sessionId", null, PlayerStatus.READY, listOf()),
-            Player(User(UUID.randomUUID(), "DummyUser4"), "sessionId", null, PlayerStatus.READY, listOf()),
-            Player(User(UUID.randomUUID(), "DummyUser5"), "sessionId", null, PlayerStatus.READY, listOf()),
-            Player(User(UUID.randomUUID(), "DummyUser6"), "sessionId", null, PlayerStatus.READY, listOf()),
-            Player(User(UUID.randomUUID(), "DummyUser7"), "sessionId", null, PlayerStatus.READY, listOf()),
+            Player(User(UUID.fromString("b9dc156f-b865-44ce-ab73-2ef65f706988"), "DummyUser1"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser2"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser3"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser4"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser5"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser6"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser7"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
         )
         val users = readiedPlayers.map { it.user }
         val readiedRoom = Room(

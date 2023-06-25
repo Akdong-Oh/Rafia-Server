@@ -35,7 +35,7 @@ class EntryController(
             throw IllegalArgumentException("이미 있는 유저")
         else {
             val user = User(message.userId, message.data.userName)
-            room.players.add(Player(user, headerAccessor.sessionId!!, null, PlayerStatus.NOT_READY, listOf()))
+            room.players.add(Player(user, headerAccessor.sessionId!!, null, PlayerStatus.NOT_READY, mutableMapOf()))
             val savedRoom = roomService.save(room)
             if (savedRoom.players.count() > Util.MAX_ROOM_PLAYER) // 9 이상 - 나 포함하고도 1명더 들어옴
                 throw IllegalStateException("인원수 많음 / 롤백") // 롤백

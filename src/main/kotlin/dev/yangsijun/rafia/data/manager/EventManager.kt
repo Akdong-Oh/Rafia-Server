@@ -29,4 +29,8 @@ open class EventManager(
         log.trace("EventManager#gameStart at : ${LocalDateTime.now()}")
         return
     }
+
+    fun flowGame(message: ReadyMessage, room: Room) {
+
+    }
 }
