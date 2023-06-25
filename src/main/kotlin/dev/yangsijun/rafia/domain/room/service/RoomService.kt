@@ -1,14 +1,14 @@
 package dev.yangsijun.rafia.domain.room.service
 
-import dev.yangsijun.rafia.data.player.Player
+import dev.yangsijun.rafia.data.enums.EventStatus
 import dev.yangsijun.rafia.domain.room.domain.Room
 import dev.yangsijun.rafia.domain.room.dto.CreateRoom
-import dev.yangsijun.rafia.domain.room.enums.RoomStatus
+
 import dev.yangsijun.rafia.domain.room.repository.RoomRepository
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import reactor.core.scheduler.Schedulers
 import java.time.LocalDateTime
 import java.util.*
 
@@ -27,7 +27,7 @@ class RoomService(
         if (findAll().any { it.name == roomDto.name }) {
             throw IllegalArgumentException("Existed Room, name: " + roomDto.name)
         }
-        return repository.save(Room(name = roomDto.name, status = RoomStatus.OPEN))
+        return repository.save(Room(name = roomDto.name, eventStatus = EventStatus.WAIT))
         log.trace("RoomService#create [$roomDto.name] : ${LocalDateTime.now()}")
     }
 
@@ -52,5 +52,11 @@ class RoomService(
     fun save(room: Room): Room {
         return repository.save(room)
         log.trace("RoomService#existById [$room] : ${LocalDateTime.now()}")
+    }
+
+    @Async
+    fun saveAsync(room: Room) {
+        this.save(room)
+        log.trace("RoomService#saveAsync at : ${LocalDateTime.now()}")
     }
 }

@@ -1,6 +1,6 @@
 package dev.yangsijun.rafia.socket.listener
 
-import dev.yangsijun.rafia.data.enums.GameStatus
+import dev.yangsijun.rafia.data.enums.SocketStatus
 import dev.yangsijun.rafia.data.player.Player
 import dev.yangsijun.rafia.domain.room.domain.Room
 import dev.yangsijun.rafia.domain.room.service.RoomService
@@ -47,7 +47,7 @@ class WebSocketEventListener(
                 room.players.remove(player)
                 roomService.save(room)
                 val message: ExitMessage = ExitMessage(
-                    GameStatus.EXIT,
+                    SocketStatus.EXIT,
                     room.id,
                     player.user.id,
                     Exit(player.user.name)

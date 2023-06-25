@@ -1,6 +1,6 @@
 package dev.yangsijun.rafia.data.enums
 
-enum class GameStatus {
+enum class SocketStatus {
     ENTRY,
     EXIT,
     READY,

@@ -1,6 +1,6 @@
 package dev.yangsijun.rafia.socket.controller
 
-import dev.yangsijun.rafia.data.enums.GameStatus
+import dev.yangsijun.rafia.data.enums.SocketStatus
 import dev.yangsijun.rafia.data.player.Player
 import dev.yangsijun.rafia.domain.room.service.RoomService
 import dev.yangsijun.rafia.socket.message.ExitMessage
@@ -20,7 +20,7 @@ class ExitController(
     @MessageMapping("/exit")
     fun enter(message: ExitMessage, headerAccessor: SimpMessageHeaderAccessor) {
         // TODO WebSocketEventListener 랑 로직이 비슷한 부분이 있으니 수정 시 주의
-        if (message.status != GameStatus.EXIT)
+        if (message.status != SocketStatus.EXIT)
             throw IllegalArgumentException("유효하지 않은 status")
         val room = roomService.findById(message.roomId) // TODO 예외처리 필요함
         if (room.players.count() <= 1)
@@ -31,6 +31,7 @@ class ExitController(
                 room.players.remove(player)
                 roomService.save(room)
                 sendingOperations.convertAndSend("/topic/" + message.roomId, message)
+                return
             } catch (ex : Exception) {
                 throw IllegalArgumentException("방 안에 존재하지 않는 유저")
             }

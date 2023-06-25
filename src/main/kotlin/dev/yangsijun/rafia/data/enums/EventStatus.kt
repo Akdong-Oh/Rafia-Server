@@ -1,6 +1,6 @@
 package dev.yangsijun.rafia.data.enums
 
-enum class Event {
+enum class EventStatus {
     WAIT,
     DAY,
     VOTE,

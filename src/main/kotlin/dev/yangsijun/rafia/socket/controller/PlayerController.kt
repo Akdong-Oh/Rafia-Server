@@ -1,7 +1,10 @@
 package dev.yangsijun.rafia.socket.controller
 
-import dev.yangsijun.rafia.data.enums.GameStatus
+import dev.yangsijun.rafia.data.enums.EventStatus
+import dev.yangsijun.rafia.data.enums.SocketStatus
 import dev.yangsijun.rafia.data.enums.PlayerStatus
+import dev.yangsijun.rafia.data.manager.EventManager
+import dev.yangsijun.rafia.data.manager.JobManager
 import dev.yangsijun.rafia.data.player.Player
 import dev.yangsijun.rafia.domain.room.domain.Room
 import dev.yangsijun.rafia.domain.room.service.RoomService
@@ -18,12 +21,14 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class PlayerController(
     private val sendingOperations: SimpMessageSendingOperations,
-    private val roomService: RoomService
+    private val roomService: RoomService,
+    private val eventManager: EventManager,
+    private val jobManager: JobManager
 ) {
     @MessageMapping("/ready")
     fun enter(message: ReadyMessage, headerAccessor: SimpMessageHeaderAccessor) {
         // TODO WebSocketEventListener 랑 로직이 비슷한 부분이 있으니 수정 시 주의
-        if (message.status != GameStatus.READY)
+        if (message.status != SocketStatus.READY)
             throw IllegalArgumentException("유효하지 않은 status")
         val room = roomService.findById(message.roomId) // TODO 예외처리 필요함
         val player: Player = room.players.first { it.user.id == message.userId } // TODO 예외 나옴
@@ -52,11 +57,13 @@ class PlayerController(
                 )
                 roomService.save(room)
             }
+            sendingOperations.convertAndSend("/topic/" + message.roomId, message)
             if (isStartAble(room)) {
                 // TODO 게임 시작하기
-            } else {
-                sendingOperations.convertAndSend("/topic/" + message.roomId, message)
+                eventManager.gameStart(message, room)
+                jobManager.setJob(message, room)
             }
+            return
         } catch (ex: NoSuchElementException) {
             throw IllegalArgumentException("방 안에 존재하지 않는 유저")
         }
@@ -64,8 +71,9 @@ class PlayerController(
     }
 
     fun isStartAble(room: Room): Boolean {
-        val isAllReady: Boolean = room.players.count { it.status == PlayerStatus.READY } == room.players.size
+        val isAllReady: Boolean = room.players.count { it.readyStatus == PlayerStatus.READY } == room.players.size
         val canStartHeadCount: Boolean = room.players.count() >= Util.MIN_ROOM_START_PLAYER
-        return (isAllReady and canStartHeadCount)
+        val isWait: Boolean = room.eventStatus == EventStatus.WAIT
+        return (isAllReady and canStartHeadCount and isWait)
     }
 }

@@ -1,9 +1,10 @@
 package dev.yangsijun.rafia.socket.controller
 
-import dev.yangsijun.rafia.data.enums.GameStatus
+import dev.yangsijun.rafia.data.enums.EventStatus
+import dev.yangsijun.rafia.data.enums.SocketStatus
 import dev.yangsijun.rafia.data.enums.PlayerStatus
 import dev.yangsijun.rafia.data.player.Player
-import dev.yangsijun.rafia.domain.room.enums.RoomStatus
+
 import dev.yangsijun.rafia.domain.room.service.RoomService
 import dev.yangsijun.rafia.domain.user.domain.User
 import dev.yangsijun.rafia.global.Util
@@ -23,10 +24,10 @@ class EntryController(
 ) {
     @MessageMapping("/entry")
     fun enter(message: EntryMessage, headerAccessor: SimpMessageHeaderAccessor) {
-        if (message.status != GameStatus.ENTRY)
+        if (message.status != SocketStatus.ENTRY)
             throw IllegalArgumentException("유효하지 않은 status")
         val room = roomService.findById(message.roomId) // TODO 예외처리 필요함
-        if (room.status == RoomStatus.PLAY)
+        if (room.eventStatus != EventStatus.WAIT)
             throw IllegalStateException("플레이 중")
         else if (room.players.count() >= Util.MAX_ROOM_PLAYER)
             throw IllegalStateException("인원수 많음")
@@ -39,6 +40,7 @@ class EntryController(
             if (savedRoom.players.count() > Util.MAX_ROOM_PLAYER) // 9 이상 - 나 포함하고도 1명더 들어옴
                 throw IllegalStateException("인원수 많음 / 롤백") // 롤백
             sendingOperations.convertAndSend("/topic/" + message.roomId, message)
+            return
         }
         //TODO 에러 발생
     }

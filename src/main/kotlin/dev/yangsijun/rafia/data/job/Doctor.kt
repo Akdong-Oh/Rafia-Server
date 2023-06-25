@@ -1,10 +1,13 @@
 package dev.yangsijun.rafia.data.job
 
-import dev.yangsijun.rafia.data.enums.Skill
+import dev.yangsijun.rafia.data.enums.SkillStatus
 import dev.yangsijun.rafia.data.group.Citizen
 
-class Doctor : Citizen, Job() {
-    override val skills: List<Skill> = listOf(Skill.VOTE, Skill.HEAL)
+class Doctor : Citizen, BaseJob() {
+    override val skillStatuses: List<SkillStatus> = listOf(SkillStatus.VOTE, SkillStatus.HEAL)
+    override fun getName(): String {
+        return Doctor.NAME
+    }
 
     companion object {
         const val NAME: String = "Doctor"

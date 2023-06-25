@@ -1,6 +1,6 @@
 package dev.yangsijun.rafia.data.enums
 
-enum class Skill {
+enum class SkillStatus {
     KILL,
     VOTE,
     HEAL,

@@ -1,6 +1,6 @@
 package dev.yangsijun.rafia.data.enums
 
-enum class Notice {
+enum class NoticeStatus {
     HEALED,
     KILLED,
     SEEKED,
