@@ -1,6 +1,7 @@
 package dev.yangsijun.rafia.socket.controller
 
 import dev.yangsijun.rafia.data.enums.GameStatus
+import dev.yangsijun.rafia.data.enums.PlayerStatus
 import dev.yangsijun.rafia.data.player.Player
 import dev.yangsijun.rafia.domain.room.enums.RoomStatus
 import dev.yangsijun.rafia.domain.room.service.RoomService
@@ -29,15 +30,16 @@ class EntryController(
             throw IllegalStateException("플레이 중")
         else if (room.players.count() >= Util.MAX_ROOM_PLAYER)
             throw IllegalStateException("인원수 많음")
-        else if (room.players.any { it.user.id == message.data.userId })
+        else if (room.players.any { it.user.id == message.userId })
             throw IllegalArgumentException("이미 있는 유저")
         else {
-            val user = User(message.data.userId, message.data.userName)
-            room.players.add(Player(user, headerAccessor.sessionId!!, null, listOf()))
+            val user = User(message.userId, message.data.userName)
+            room.players.add(Player(user, headerAccessor.sessionId!!, null, PlayerStatus.NOT_READY, listOf()))
             val savedRoom = roomService.save(room)
             if (savedRoom.players.count() > Util.MAX_ROOM_PLAYER) // 9 이상 - 나 포함하고도 1명더 들어옴
                 throw IllegalStateException("인원수 많음 / 롤백") // 롤백
+            sendingOperations.convertAndSend("/topic/" + message.roomId, message)
         }
-        sendingOperations.convertAndSend("/topic/" + message.roomId, message)
+        //TODO 에러 발생
     }
 }

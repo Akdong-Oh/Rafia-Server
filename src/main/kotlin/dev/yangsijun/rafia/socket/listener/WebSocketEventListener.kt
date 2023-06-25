@@ -49,7 +49,8 @@ class WebSocketEventListener(
                 val message: ExitMessage = ExitMessage(
                     GameStatus.EXIT,
                     room.id,
-                    Exit(player.user.id, player.user.name)
+                    player.user.id,
+                    Exit(player.user.name)
                 )
                 sendingOperations.convertAndSend("/topic/" + message.roomId, message)
             }
