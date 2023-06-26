@@ -4,7 +4,7 @@ import dev.yangsijun.rafia.data.enums.SkillStatus
 import dev.yangsijun.rafia.data.group.Criminal
 
 class Mafia : Criminal, BaseJob() {
-    override val skillStatuses: List<SkillStatus> = listOf(SkillStatus.VOTE, SkillStatus.KILL)
+    override var skillStatuses: List<SkillStatus> = listOf(SkillStatus.VOTE, SkillStatus.KILL)
 
     override fun getName(): String {
         return Mafia.NAME

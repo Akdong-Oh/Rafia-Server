@@ -1,13 +1,12 @@
 package dev.yangsijun.rafia.socket
 
 import dev.yangsijun.rafia.data.enums.PlayerStatus
+import dev.yangsijun.rafia.data.enums.ReadyStatus
 import dev.yangsijun.rafia.data.player.Player
 import dev.yangsijun.rafia.domain.room.domain.Room
 import dev.yangsijun.rafia.domain.room.repository.RoomRepository
-import dev.yangsijun.rafia.domain.room.service.RoomService
 import dev.yangsijun.rafia.domain.user.domain.User
 import dev.yangsijun.rafia.domain.user.repository.UserRepository
-import dev.yangsijun.rafia.domain.user.service.UserService
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
 import java.util.*
@@ -22,13 +21,13 @@ class DummyRoomCommandLineRunner(
         userRepository.deleteAll()
         roomRepository.deleteAll()
         val readiedPlayers: MutableList<Player> = mutableListOf(
-            Player(User(UUID.fromString("b9dc156f-b865-44ce-ab73-2ef65f706988"), "DummyUser1"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
-            Player(User(UUID.randomUUID(), "DummyUser2"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
-            Player(User(UUID.randomUUID(), "DummyUser3"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
-            Player(User(UUID.randomUUID(), "DummyUser4"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
-            Player(User(UUID.randomUUID(), "DummyUser5"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
-            Player(User(UUID.randomUUID(), "DummyUser6"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
-            Player(User(UUID.randomUUID(), "DummyUser7"), "sessionId", null, PlayerStatus.READY, mutableMapOf()),
+            Player(User(UUID.fromString("b9dc156f-b865-44ce-ab73-2ef65f706988"), "DummyUser1"), "sessionId1", null, ReadyStatus.READY, PlayerStatus.ALIVE, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser2"), "sessionId2", null, ReadyStatus.READY, PlayerStatus.ALIVE, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser3"), "sessionId3", null, ReadyStatus.READY, PlayerStatus.ALIVE, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser4"), "sessionId4", null, ReadyStatus.READY, PlayerStatus.ALIVE, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser5"), "sessionId5", null, ReadyStatus.READY, PlayerStatus.ALIVE, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser6"), "sessionId6", null, ReadyStatus.READY, PlayerStatus.ALIVE, mutableMapOf()),
+            Player(User(UUID.randomUUID(), "DummyUser7"), "sessionId7", null, ReadyStatus.READY, PlayerStatus.ALIVE, mutableMapOf()),
         )
         val users = readiedPlayers.map { it.user }
         val readiedRoom = Room(

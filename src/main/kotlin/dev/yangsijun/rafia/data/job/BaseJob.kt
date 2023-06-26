@@ -4,7 +4,7 @@ import dev.yangsijun.rafia.data.enums.SkillStatus
 
 abstract class BaseJob {
 
-    abstract val skillStatuses: List<SkillStatus>
+    abstract var skillStatuses: List<SkillStatus>
 
     fun killAble(): Boolean {
         return skillStatuses.any { it == SkillStatus.KILL }

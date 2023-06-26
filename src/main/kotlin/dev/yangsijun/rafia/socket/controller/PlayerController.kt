@@ -1,14 +1,15 @@
 package dev.yangsijun.rafia.socket.controller
 
 import dev.yangsijun.rafia.data.enums.EventStatus
-import dev.yangsijun.rafia.data.enums.SocketStatus
 import dev.yangsijun.rafia.data.enums.PlayerStatus
+import dev.yangsijun.rafia.data.enums.SocketStatus
+import dev.yangsijun.rafia.data.enums.ReadyStatus
 import dev.yangsijun.rafia.data.manager.EventManager
 import dev.yangsijun.rafia.data.manager.JobManager
 import dev.yangsijun.rafia.data.player.Player
 import dev.yangsijun.rafia.domain.room.domain.Room
 import dev.yangsijun.rafia.domain.room.service.RoomService
-import dev.yangsijun.rafia.global.Util
+import dev.yangsijun.rafia.global.RoomUtil
 import dev.yangsijun.rafia.socket.message.ReadyMessage
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor
@@ -34,24 +35,26 @@ class PlayerController(
         val player: Player = room.players.first { it.user.id == message.userId } // TODO 예외 나옴
         room.players.remove(player)
         try {
-            if (message.data.userStatus == PlayerStatus.NOT_READY) {
+            if (message.data.userStatus == ReadyStatus.NOT_READY) {
                 room.players.add(
                     Player(
                         player.user,
                         player.id,
                         player.job,
-                        PlayerStatus.NOT_READY,
+                        ReadyStatus.NOT_READY,
+                        PlayerStatus.ALIVE,
                         player.interactions
                     )
                 )
                 roomService.save(room)
-            } else if (message.data.userStatus == PlayerStatus.READY) {
+            } else if (message.data.userStatus == ReadyStatus.READY) {
                 room.players.add(
                     Player(
                         player.user,
                         player.id,
                         player.job,
-                        PlayerStatus.READY,
+                        ReadyStatus.READY,
+                        PlayerStatus.ALIVE,
                         player.interactions
                     )
                 )
@@ -60,8 +63,8 @@ class PlayerController(
             sendingOperations.convertAndSend("/topic/" + message.roomId, message)
             if (isStartAble(room)) {
                 // TODO 게임 시작하기
-                eventManager.gameStart(message, room)
                 jobManager.setJob(message, room)
+                eventManager.gameStart(message, room)
             }
             return
         } catch (ex: NoSuchElementException) {
@@ -71,8 +74,8 @@ class PlayerController(
     }
 
     fun isStartAble(room: Room): Boolean {
-        val isAllReady: Boolean = room.players.count { it.readyStatus == PlayerStatus.READY } == room.players.size
-        val canStartHeadCount: Boolean = room.players.count() >= Util.MIN_ROOM_START_PLAYER
+        val isAllReady: Boolean = room.players.count { it.readyStatus == ReadyStatus.READY } >= room.players.size
+        val canStartHeadCount: Boolean = room.players.count() >= RoomUtil.MIN_ROOM_START_PLAYER
         val isWait: Boolean = room.eventStatus == EventStatus.WAIT
         return (isAllReady and canStartHeadCount and isWait)
     }

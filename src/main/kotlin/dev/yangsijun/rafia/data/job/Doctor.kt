@@ -4,7 +4,7 @@ import dev.yangsijun.rafia.data.enums.SkillStatus
 import dev.yangsijun.rafia.data.group.Citizen
 
 class Doctor : Citizen, BaseJob() {
-    override val skillStatuses: List<SkillStatus> = listOf(SkillStatus.VOTE, SkillStatus.HEAL)
+    override var skillStatuses: List<SkillStatus> = listOf(SkillStatus.VOTE, SkillStatus.HEAL)
     override fun getName(): String {
         return Doctor.NAME
     }

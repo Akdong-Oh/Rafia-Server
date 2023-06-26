@@ -1,6 +1,8 @@
 package dev.yangsijun.rafia.domain.room.service
 
 import dev.yangsijun.rafia.data.enums.EventStatus
+import dev.yangsijun.rafia.data.enums.PlayerStatus
+import dev.yangsijun.rafia.data.enums.ReadyStatus
 import dev.yangsijun.rafia.domain.room.domain.Room
 import dev.yangsijun.rafia.domain.room.dto.CreateRoom
 
@@ -57,6 +59,18 @@ class RoomService(
     @Async
     fun saveAsync(room: Room) {
         this.save(room)
-        log.trace("RoomService#saveAsync at : ${LocalDateTime.now()}")
+        //log.trace("RoomService#saveAsync at : ${LocalDateTime.now()}")
+    }
+
+    fun renew(room: Room): Room {
+        Room(room.id, room.name, EventStatus.WAIT, room.players)
+        room.players.forEach {
+            it.job = null
+            it.interactions = mutableMapOf()
+            it.readyStatus = ReadyStatus.NOT_READY
+            it.playerStatus = PlayerStatus.ALIVE
+        }
+        return repository.save(room)
+        log.trace("RoomService#existById [$room] : ${LocalDateTime.now()}")
     }
 }
