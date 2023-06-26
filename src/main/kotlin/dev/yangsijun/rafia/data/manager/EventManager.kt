@@ -52,17 +52,17 @@ class EventManager(
             handleEvent(room.id, EventStatus.OBJECTION, GameUtil.OBJECTION_TIME)
             handleEvent(room.id, EventStatus.CONFIRMATION, GameUtil.CONFIRMATION_TIME)
         }
-        val endMessage = EventMessage(SocketStatus.EVENT, room.id, Event(EventStatus.END))
+        val endMessage = EventMessage(SocketStatus.EVENT, room.id, Event(EventStatus.END, 0))
         sendingOperations.convertAndSend("/topic/" + endMessage.roomId, endMessage)
     }
 
     private fun handleEvent(roomId: UUID, eventStatus: EventStatus, sleepTime: Long) {
         val room:Room = roomService.findById(roomId)
-        val eventMessage = EventMessage(SocketStatus.EVENT, room.id, Event(eventStatus))
+        val eventMessage = EventMessage(SocketStatus.EVENT, room.id, Event(eventStatus, sleepTime))
         room.eventStatus = eventMessage.data.status
         roomService.saveAsync(room)
         sendingOperations.convertAndSend("/topic/" + eventMessage.roomId, eventMessage)
-        log.trace("Start Event ${eventStatus.name} / Sec : $sleepTime")
+        log.trace("Start Event ${eventStatus.name} | Sec : $sleepTime")
         sleepTime.let { TimeUnit.SECONDS.sleep(it) }
         checkEnd(room.id)
     }
@@ -176,7 +176,7 @@ class EventManager(
     private fun reset(room: Room, isCriminalWin: Boolean) {
         recordService.save(room, isCriminalWin)
         roomService.renew(room)
-        val renewMessage = EventMessage(SocketStatus.EVENT, room.id, Event(EventStatus.WAIT))
+        val renewMessage = EventMessage(SocketStatus.EVENT, room.id, Event(EventStatus.WAIT, 0))
         sendingOperations.convertAndSend("/topic/" + renewMessage.roomId, renewMessage)
         return
     }
