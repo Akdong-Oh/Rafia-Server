@@ -8,5 +8,6 @@ enum class SocketStatus {
     INTERACTION,
     CHAT,
     NOTICE,
-    SET_JOB
+    SET_JOB,
+    ERROR
 }
