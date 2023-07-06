@@ -49,8 +49,8 @@ class EventManager(
             handleEvent(room.id, EventStatus.DAY, GameUtil.DAY_TIME_PER_ALIVE_PLAYER * room.players.size)
             handleEvent(room.id, EventStatus.VOTE, GameUtil.VOTE_TIME)
             voteResultNotice(room.id)
-            handleEvent(room.id, EventStatus.OBJECTION, GameUtil.OBJECTION_TIME)
-            handleEvent(room.id, EventStatus.CONFIRMATION, GameUtil.CONFIRMATION_TIME)
+            //handleEvent(room.id, EventStatus.OBJECTION, GameUtil.OBJECTION_TIME)
+            //handleEvent(room.id, EventStatus.CONFIRMATION, GameUtil.CONFIRMATION_TIME)
         }
         val endMessage = EventMessage(SocketStatus.EVENT, room.id, Event(EventStatus.END, 0))
         sendingOperations.convertAndSend("/topic/" + endMessage.roomId, endMessage)
@@ -117,7 +117,6 @@ class EventManager(
             player.interactions.clear()
             roomService.saveAsync(room)
         }
-        return
     }
 
 
