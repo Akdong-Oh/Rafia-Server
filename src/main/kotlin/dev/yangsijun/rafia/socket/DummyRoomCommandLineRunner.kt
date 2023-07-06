@@ -18,6 +18,7 @@ class DummyRoomCommandLineRunner(
     val userRepository: UserRepository
 ) : CommandLineRunner {
     override fun run(vararg args: String) {
+        /*
         userRepository.deleteAll()
         roomRepository.deleteAll()
         val readiedPlayers: MutableList<Player> = mutableListOf(
@@ -37,5 +38,6 @@ class DummyRoomCommandLineRunner(
         )
         userRepository.saveAll(users)
         roomRepository.save(readiedRoom)
+         */
     }
 }

@@ -1,5 +1,6 @@
 server:
   shutdown: graceful
+  port: 80
 spring:
   web:
     graceful
@@ -9,12 +10,12 @@ spring:
       username:
       password:
     redis:
-      host: localhost
+      host: 127.0.0.1
       port: 6379
   rabbitmq:
     password: guest
     port: 61613
-    host: localhost
+    host: 127.0.0.1
     username: guest
 
 logging:
