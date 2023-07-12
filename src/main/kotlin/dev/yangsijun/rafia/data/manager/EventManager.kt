@@ -85,7 +85,7 @@ class EventManager(
     }
 
     private fun voteResultNotice(roomId: UUID) {
-        val room:Room = roomService.findById(roomId)
+        val room: Room = roomService.findById(roomId)
         val maxVoteCount = room.players.maxOfOrNull { it.interactions.count { interaction -> interaction.value == SkillStatus.VOTE } } ?: 0
         val maxVotePlayers = room.players.filter { it.interactions.count { interaction -> interaction.value == SkillStatus.VOTE } == maxVoteCount }
         if (maxVotePlayers.isEmpty()) {
@@ -94,20 +94,21 @@ class EventManager(
             log.trace("Pass Vote : ${NoticeStatus.PASS.name} ")
         } else if (maxVotePlayers.size == 1) {
             val maxVotePlayer = maxVotePlayers.first()
-            val executedPlayer = Player(
-                maxVotePlayer.user,
-                maxVotePlayer.id,
-                maxVotePlayer.job,
-                maxVotePlayer.readyStatus,
-                PlayerStatus.DEAD,
-                mutableMapOf()
-            )
+            val executedPlayer =
+                    Player(
+                            maxVotePlayer.user,
+                            maxVotePlayer.id,
+                            maxVotePlayer.job,
+                            maxVotePlayer.readyStatus,
+                            PlayerStatus.DEAD,
+                            mutableMapOf()
+                    )
             room.players.remove(maxVotePlayer)
             room.players.add(executedPlayer)
+            log.trace("User ${maxVotePlayer.user.name} : ${NoticeStatus.EXECUTED.name} ")
             roomService.saveAsync(room)
             val noticeMessage = NoticeMessage(SocketStatus.NOTICE, room.id, Notice(NoticeStatus.EXECUTED, maxVotePlayer.user.id, maxVotePlayer.job?.getName()))
             sendingOperations.convertAndSend("/topic/" + noticeMessage.roomId, noticeMessage)
-            log.trace("User ${maxVotePlayer.user.name} : ${NoticeStatus.EXECUTED.name} ")
         } else {
             val noticeMessage = NoticeMessage(SocketStatus.NOTICE, room.id, Notice(NoticeStatus.SAME_COUNT_VOTE, null, null))
             sendingOperations.convertAndSend("/topic/" + noticeMessage.roomId, noticeMessage)
@@ -115,60 +116,64 @@ class EventManager(
         }
         room.players.forEach { player: Player ->
             player.interactions.clear()
-            roomService.saveAsync(room)
         }
+        roomService.saveAsync(room)
     }
 
 
     private fun nightResultNotice(roomId: UUID) {
-        val room:Room = roomService.findById(roomId)
+        val room: Room = roomService.findById(roomId)
 
         // TODO 인터렉션 컨트롤러 만들기, 투표를 제외하고는 모든 인터렉션에 한 SKILL만 있어야 함
         //  투표의 경우, 한 유저가 한 사람에게 투표 가능
 
-        room.players.forEach { player: Player ->
+        val playersCopy = ArrayList(room.players) // players 컬렉션 복사
+
+        playersCopy.forEach { player: Player ->
             val values = player.interactions.values
             if (values.any { v -> v == SkillStatus.SEEK }) {
                 val noticeMessage = NoticeMessage(
-                    SocketStatus.NOTICE,
-                    room.id,
-                    Notice(NoticeStatus.HEALED, player.user.id, player.job?.getName())
+                        SocketStatus.NOTICE,
+                        room.id,
+                        Notice(NoticeStatus.HEALED, player.user.id, player.job?.getName())
                 )
                 sendingOperations.convertAndSend("/topic/" + noticeMessage.roomId, noticeMessage)
                 log.trace("User ${player.user.name} : ${NoticeStatus.SEEKED.name}, Job : ${player.job?.getName()} ")
             }
-            if (values.any { v -> v == SkillStatus.KILL } and values.any { v -> v == SkillStatus.HEAL }) {
+            if (values.any { v -> v == SkillStatus.KILL } && values.any { v -> v == SkillStatus.HEAL }) {
                 val noticeMessage =
-                    NoticeMessage(SocketStatus.NOTICE, room.id, Notice(NoticeStatus.HEALED, player.user.id, player.job?.getName()))
+                        NoticeMessage(SocketStatus.NOTICE, room.id, Notice(NoticeStatus.HEALED, player.user.id, player.job?.getName()))
                 sendingOperations.convertAndSend("/topic/" + noticeMessage.roomId, noticeMessage)
                 log.trace("User ${player.user.name} : ${NoticeStatus.HEALED.name} ")
             } else if (values.any { v -> v == SkillStatus.KILL }) {
                 val noticeMessage =
-                    NoticeMessage(SocketStatus.NOTICE, room.id, Notice(NoticeStatus.KILLED, player.user.id, player.job?.getName()))
+                        NoticeMessage(SocketStatus.NOTICE, room.id, Notice(NoticeStatus.KILLED, player.user.id, player.job?.getName()))
                 sendingOperations.convertAndSend("/topic/" + noticeMessage.roomId, noticeMessage)
-                val killedPlayer = Player(
-                    player.user,
-                    player.id,
-                    player.job,
-                    player.readyStatus,
-                    PlayerStatus.DEAD,
-                    mutableMapOf()
-                )
+                val killedPlayer =
+                        Player(
+                                player.user,
+                                player.id,
+                                player.job,
+                                player.readyStatus,
+                                PlayerStatus.DEAD,
+                                mutableMapOf()
+                        )
                 room.players.remove(killedPlayer)
                 room.players.add(killedPlayer)
-                roomService.saveAsync(room)
                 log.trace("User ${killedPlayer.user.name} : ${NoticeStatus.KILLED.name} ")
             } else {
                 val noticeMessage =
-                    NoticeMessage(SocketStatus.NOTICE, room.id, Notice(NoticeStatus.PASS, player.user.id, player.job?.getName()))
+                        NoticeMessage(SocketStatus.NOTICE, room.id, Notice(NoticeStatus.PASS, player.user.id, player.job?.getName()))
                 sendingOperations.convertAndSend("/topic/" + noticeMessage.roomId, noticeMessage)
                 log.trace("Pass Night : ${NoticeStatus.PASS.name} ")
             }
         }
+
         room.players.forEach { player: Player ->
             player.interactions.clear()
-            roomService.saveAsync(room)
         }
+        roomService.saveAsync(room) // saveAsync 메서드 루프 외부로 이동
+
         return
     }
 

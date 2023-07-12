@@ -34,12 +34,12 @@ class InteractionController(
             it.interactions.remove(message.data.senderId, message.data.skill)
         }
         room.players.forEach { // 돌면서 receiver의 ID인 경우 저장
-            if (it.user.id == message.data.receiverId) { // TODO k만 같아도 대체되고 있음, 사실 k, v 다 같아야 대체 되어야 하는데, 어차피 지금 상황에선 상관없어서 냅둡. (한 사람이 특정 이벤트에 투표, 킬, 힐 중 1번이라도 여러변 할 수 없음)
-                it.interactions.put(message.data.senderId, message.data.skill)
+            if (it.user.id == message.data.receiverId) { //TODO k만 같아도 대체되고 있음, 사실 k, v 다 같아야 대체 되어야 하는데, 어차피 지금 상황에선 상관없어서 냅둡. (한 사람이 특정 이벤트에 투표, 킬, 힐 중 1번이라도 여러변 할 수 없음)
+                it.interactions[message.data.senderId] = message.data.skill
             }
         }
         roomService.save(room)
         sendingOperations.convertAndSend("/topic/" + message.roomId, message)
-        return
     }
+
 }

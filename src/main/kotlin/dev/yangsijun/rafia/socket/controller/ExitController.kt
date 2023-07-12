@@ -35,12 +35,11 @@ class ExitController(
                 room.players.remove(player)
                 roomService.save(room)
                 sendingOperations.convertAndSend("/topic/" + message.roomId, message)
-                return
-            } catch (ex : NoSuchElementException) {
+            } catch (ex: NoSuchElementException) {
                 val exMessage = GameUtil.errorMessage(message, ErrorCode.C0005) // 방 안에 존재하지 않는 유저
                 sendingOperations.convertAndSend("/topic/" + exMessage.roomId, exMessage)
             }
         }
-        //TODO 에러 발생
+        // TODO 에러 발생
     }
 }

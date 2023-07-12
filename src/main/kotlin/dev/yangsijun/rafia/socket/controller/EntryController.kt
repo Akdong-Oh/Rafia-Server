@@ -40,23 +40,21 @@ class EntryController(
         } else {
             val user = User(message.userId, message.data.userName)
             room.players.add(
-                Player(
-                    user,
-                    headerAccessor.sessionId!!,
-                    null,
-                    ReadyStatus.NOT_READY,
-                    PlayerStatus.ALIVE,
-                    mutableMapOf()
-                )
+                    Player(
+                            user,
+                            headerAccessor.sessionId!!,
+                            null,
+                            ReadyStatus.NOT_READY,
+                            PlayerStatus.ALIVE,
+                            mutableMapOf()
+                    )
             )
             val savedRoom = roomService.save(room)
-            if (savedRoom.players.count() > RoomUtil.MAX_ROOM_PLAYER) // 9 이상 - 나 포함하고도 1명더 들어옴
-            {
+            if (savedRoom.players.count() > RoomUtil.MAX_ROOM_PLAYER) { // 9 이상 - 나 포함하고도 1명 더 들어옴
                 val exMessage = GameUtil.errorMessage(message, ErrorCode.C0002) // 인원수 많음 / 롤백
                 sendingOperations.convertAndSend("/topic/" + exMessage.roomId, exMessage)
             }
             sendingOperations.convertAndSend("/topic/" + message.roomId, message)
-            return
         }
     }
 }

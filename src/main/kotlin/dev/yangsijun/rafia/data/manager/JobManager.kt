@@ -29,8 +29,8 @@ class JobManager(
             log.trace("User ${it.user.name} Set Job : ${job} ")
         }
         roomService.saveAsync(room)
-        return
     }
+
 
     private fun createJobQueue(size: Int): ArrayDeque<BaseJob> {
         val jobs: MutableList<BaseJob> = mutableListOf(Mafia(), Mafia(), Police(), Doctor())

@@ -36,26 +36,26 @@ class PlayerController(
         try {
             if (message.data.userStatus == ReadyStatus.NOT_READY) {
                 room.players.add(
-                    Player(
-                        player.user,
-                        player.id,
-                        player.job,
-                        ReadyStatus.NOT_READY,
-                        PlayerStatus.ALIVE,
-                        player.interactions
-                    )
+                        Player(
+                                player.user,
+                                player.id,
+                                player.job,
+                                ReadyStatus.NOT_READY,
+                                PlayerStatus.ALIVE,
+                                player.interactions
+                        )
                 )
                 roomService.save(room)
             } else if (message.data.userStatus == ReadyStatus.READY) {
                 room.players.add(
-                    Player(
-                        player.user,
-                        player.id,
-                        player.job,
-                        ReadyStatus.READY,
-                        PlayerStatus.ALIVE,
-                        player.interactions
-                    )
+                        Player(
+                                player.user,
+                                player.id,
+                                player.job,
+                                ReadyStatus.READY,
+                                PlayerStatus.ALIVE,
+                                player.interactions
+                        )
                 )
                 roomService.save(room)
             }
@@ -65,8 +65,7 @@ class PlayerController(
                 jobManager.setJob(message, room)
                 eventManager.gameStart(message, room)
             }
-            return
-        } catch (ex : NoSuchElementException) {
+        } catch (ex: NoSuchElementException) {
             val exMessage = GameUtil.errorMessage(message, ErrorCode.C0005) // 방 안에 존재하지 않는 유저
             sendingOperations.convertAndSend("/topic/" + exMessage.roomId, exMessage)
         }
